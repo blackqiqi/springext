@@ -22,28 +22,8 @@ jobs:
         java-version: 1.8
     - name: Build with Maven
       run: mvn -B package --file pom.xml
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - name: Checkmarx CxFlow Action
-      uses: checkmarx-ts/checkmarx-cxflow-github-action@v1.1
+    - run: mkdir staging && cp target/*.jar staging
+    - uses: actions/upload-artifact@v2
       with:
-        project: GithubActionTest
-        team: '/CxServer/SP/Checkmarx'
-        checkmarx_url: ${{ secrets.CHECKMARX_URL }}
-        checkmarx_username: ${{ secrets.CHECKMARX_USERNAME }}
-        checkmarx_password: ${{ secrets.CHECKMARX_PASSWORD }}
-        checkmarx_client_secret: ${{ secrets.CHECKMARX_CLIENT_SECRET }}
-    # Upload SARIF report for CodeQL / Security Alerts PRocessing
-    - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v1
-      with:
-        sarif_file: cx.sarif
-  upload:
-      runs-on: ubuntu-latest
-      steps:
-      - run: mkdir -p path/to/artifact
-      - run: echo hello > path/to/artifact/world.txt
-      - name: upload
-        uses: actions/upload-artifact@v2
-        with:
-          name: my-artifact
-          path: path/to/artifact/world.txt
+        name: Package
+        path: staging
